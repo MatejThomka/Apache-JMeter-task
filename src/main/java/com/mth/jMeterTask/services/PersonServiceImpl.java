@@ -31,14 +31,34 @@ public class PersonServiceImpl implements PersonService{
   }
 
   @Override
-  public TestPerson search(Long id, String name, String lastname, Integer year, Integer month,
-                           Integer day) throws JMeterException {
-    return null;
+  public TestPerson search(Long id, String name, String lastname, String date) throws JMeterException {
+    String nameRegex = (name != null) ? name.replaceAll("\\*", "") : null;
+    String lastnameRegex = (lastname != null) ? lastname.replaceAll("\\*", "") : null;
+
+    TestPerson testPerson = new TestPerson();
+
+    if (!validateBirthNumber(testPerson.getBirthNumber())) {
+      throw new BirthNumberException();
+    }
+    return new TestPerson();
   }
 
   @Override
   public TestPerson update(Long id, String name, String lastname) throws JMeterException {
-    return null;
+    TestPerson testPerson = personRepository.findById(id);
+
+    if (name != null && lastname == null) {
+      testPerson.setName(name);
+    } else if (name == null && lastname != null) {
+      testPerson.setLastname(lastname);
+    } else {
+      testPerson.setName(name);
+      testPerson.setLastname(lastname);
+    }
+
+    personRepository.save(testPerson);
+
+    return testPerson;
   }
 
   @Override
