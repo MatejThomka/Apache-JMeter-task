@@ -5,6 +5,7 @@ import com.mth.jMeterTask.exceptions.JMeterException;
 import com.mth.jMeterTask.models.TestPerson;
 import com.mth.jMeterTask.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,11 +20,8 @@ public class PersonServiceImpl implements PersonService{
 
   @Override
   public TestPerson detail(Long id) throws JMeterException {
-    TestPerson testPerson = new TestPerson();
-    testPerson.setId(id);
-    testPerson.setName(personRepository.findById(id).getName());
-    testPerson.setLastname(personRepository.findById(id).getLastname());
-    testPerson.setBirthNumber(personRepository.findById(id).getBirthNumber());
+
+    TestPerson testPerson = personRepository.findById(id);
 
     if (!validateBirthNumber(testPerson.getBirthNumber())) {
       throw new BirthNumberException();
@@ -41,6 +39,15 @@ public class PersonServiceImpl implements PersonService{
   @Override
   public TestPerson update(Long id, String name, String lastname) throws JMeterException {
     return null;
+  }
+
+  @Override
+  public void create(String name, String lastname, String birthNumber) throws JMeterException{
+    TestPerson testPerson = new TestPerson(name, lastname, birthNumber);
+    if (personRepository.exists(Example.of(testPerson))) {
+      throw new JMeterException("This user already exist!");
+    }
+    personRepository.save(testPerson);
   }
 
   private boolean validateBirthNumber(String birthNumber) {
