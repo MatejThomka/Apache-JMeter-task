@@ -27,12 +27,14 @@ public class PersonController {
   }
 
   @PostMapping("/search")
-  ResponseEntity<TestPerson> search(@RequestBody(required = false) Long id, @RequestBody(required = false) String name, @RequestBody(required = false) String lastname, @RequestBody(required = false) Integer yyyy, @RequestBody(required = false) Integer yyyyMM, @RequestBody(required = false) Integer yyyyMMdd) {
-    return null;
+  ResponseEntity<TestPerson> search(@RequestBody(required = false) Long id, @RequestBody(required = false) String namePrefix, @RequestBody(required = false) String lastnamePrefix, @RequestBody(required = false) String date)
+      throws JMeterException {
+    return ResponseEntity.ok().body(personService.search(id, namePrefix, lastnamePrefix, date));
   }
 
   @PatchMapping("{id}/update")
-  ResponseEntity<TestPerson> update(@PathVariable Long id, @RequestBody(required = false) String name, @RequestBody(required = false) String lastname) {
-    return null;
+  ResponseEntity<TestPerson> update(@PathVariable Long id, @RequestBody(required = false) String name, @RequestBody(required = false) String lastname)
+      throws JMeterException {
+    return ResponseEntity.ok().body(personService.update(id, name, lastname));
   }
 }
