@@ -7,6 +7,6 @@ public interface TestPersonService {
 
   TestPerson detail(Long id) throws JMeterException;
   TestPerson search(Long id, String name, String lastname, String date) throws JMeterException;
-  TestPerson update(Long id, String name, String lastname) throws JMeterException;
+  TestPerson update(Long id, TestPerson testPerson) throws JMeterException;
   void create(String name, String lastname, String birthNumber) throws JMeterException;
 }

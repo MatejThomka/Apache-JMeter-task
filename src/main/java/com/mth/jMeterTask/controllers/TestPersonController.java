@@ -33,8 +33,8 @@ public class TestPersonController {
   }
 
   @PatchMapping("{id}/update")
-  ResponseEntity<TestPerson> update(@PathVariable Long id, @RequestBody(required = false) String name, @RequestBody(required = false) String lastname)
+  ResponseEntity<TestPerson> update(@PathVariable Long id, @RequestBody TestPerson testPerson)
       throws JMeterException {
-    return ResponseEntity.ok().body(testPersonService.update(id, name, lastname));
+    return ResponseEntity.ok().body(testPersonService.update(id, testPerson));
   }
 }

@@ -44,21 +44,21 @@ public class TestPersonServiceImpl implements TestPersonService {
   }
 
   @Override
-  public TestPerson update(Long id, String name, String lastname) throws JMeterException {
-    TestPerson testPerson = testPersonRepository.findById(id);
+  public TestPerson update(Long id, TestPerson testPerson) throws JMeterException {
+    TestPerson updatingPerson = testPersonRepository.findById(id);
 
-    if (name != null && lastname == null) {
-      testPerson.setName(name);
-    } else if (name == null && lastname != null) {
-      testPerson.setLastname(lastname);
+    if (testPerson.getName() != null && testPerson.getLastname() == null) {
+      updatingPerson.setName(testPerson.getName());
+    } else if (testPerson.getName() == null && testPerson.getLastname() != null) {
+      updatingPerson.setLastname(testPerson.getLastname());
     } else {
-      testPerson.setName(name);
-      testPerson.setLastname(lastname);
+      updatingPerson.setName(testPerson.getName());
+      updatingPerson.setLastname(testPerson.getLastname());
     }
 
-    testPersonRepository.save(testPerson);
+    testPersonRepository.save(updatingPerson);
 
-    return testPerson;
+    return updatingPerson;
   }
 
   @Override
