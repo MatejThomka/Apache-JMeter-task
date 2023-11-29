@@ -2,7 +2,7 @@ package com.mth.jMeterTask.controllers;
 
 import com.mth.jMeterTask.exceptions.JMeterException;
 import com.mth.jMeterTask.models.TestPerson;
-import com.mth.jMeterTask.services.PersonService;
+import com.mth.jMeterTask.services.TestPersonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,24 +17,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/person")
 @RequiredArgsConstructor
-public class PersonController {
+public class TestPersonController {
 
-  private final PersonService personService;
+  private final TestPersonService testPersonService;
 
   @GetMapping("/detail")
   ResponseEntity<TestPerson> detail(@RequestParam Long id) throws JMeterException {
-    return ResponseEntity.ok().body(personService.detail(id));
+    return ResponseEntity.ok().body(testPersonService.detail(id));
   }
 
   @PostMapping("/search")
   ResponseEntity<TestPerson> search(@RequestBody(required = false) Long id, @RequestBody(required = false) String namePrefix, @RequestBody(required = false) String lastnamePrefix, @RequestBody(required = false) String date)
       throws JMeterException {
-    return ResponseEntity.ok().body(personService.search(id, namePrefix, lastnamePrefix, date));
+    return ResponseEntity.ok().body(testPersonService.search(id, namePrefix, lastnamePrefix, date));
   }
 
   @PatchMapping("{id}/update")
   ResponseEntity<TestPerson> update(@PathVariable Long id, @RequestBody(required = false) String name, @RequestBody(required = false) String lastname)
       throws JMeterException {
-    return ResponseEntity.ok().body(personService.update(id, name, lastname));
+    return ResponseEntity.ok().body(testPersonService.update(id, name, lastname));
   }
 }

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PersonRepository extends JpaRepository<TestPerson, Integer> {
+public interface TestPersonRepository extends JpaRepository<TestPerson, Integer> {
 
   TestPerson findById(Long id);
   List<TestPerson> findByNameStartingWith(String namePrefix);

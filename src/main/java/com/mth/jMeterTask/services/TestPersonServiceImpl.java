@@ -3,25 +3,25 @@ package com.mth.jMeterTask.services;
 import com.mth.jMeterTask.exceptions.BirthNumberException;
 import com.mth.jMeterTask.exceptions.JMeterException;
 import com.mth.jMeterTask.models.TestPerson;
-import com.mth.jMeterTask.repositories.PersonRepository;
+import com.mth.jMeterTask.repositories.TestPersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PersonServiceImpl implements PersonService{
+public class TestPersonServiceImpl implements TestPersonService {
 
-  private final PersonRepository personRepository;
+  private final TestPersonRepository testPersonRepository;
 
   @Autowired
-  public PersonServiceImpl(PersonRepository personRepository) {
-    this.personRepository = personRepository;
+  public TestPersonServiceImpl(TestPersonRepository testPersonRepository) {
+    this.testPersonRepository = testPersonRepository;
   }
 
   @Override
   public TestPerson detail(Long id) throws JMeterException {
 
-    TestPerson testPerson = personRepository.findById(id);
+    TestPerson testPerson = testPersonRepository.findById(id);
 
     if (!validateBirthNumber(testPerson.getBirthNumber())) {
       throw new BirthNumberException();
@@ -45,7 +45,7 @@ public class PersonServiceImpl implements PersonService{
 
   @Override
   public TestPerson update(Long id, String name, String lastname) throws JMeterException {
-    TestPerson testPerson = personRepository.findById(id);
+    TestPerson testPerson = testPersonRepository.findById(id);
 
     if (name != null && lastname == null) {
       testPerson.setName(name);
@@ -56,7 +56,7 @@ public class PersonServiceImpl implements PersonService{
       testPerson.setLastname(lastname);
     }
 
-    personRepository.save(testPerson);
+    testPersonRepository.save(testPerson);
 
     return testPerson;
   }
@@ -64,10 +64,10 @@ public class PersonServiceImpl implements PersonService{
   @Override
   public void create(String name, String lastname, String birthNumber) throws JMeterException{
     TestPerson testPerson = new TestPerson(name, lastname, birthNumber);
-    if (personRepository.exists(Example.of(testPerson))) {
+    if (testPersonRepository.exists(Example.of(testPerson))) {
       throw new JMeterException("This user already exist!");
     }
-    personRepository.save(testPerson);
+    testPersonRepository.save(testPerson);
   }
 
   private boolean validateBirthNumber(String birthNumber) {

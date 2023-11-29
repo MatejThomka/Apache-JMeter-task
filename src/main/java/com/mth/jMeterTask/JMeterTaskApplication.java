@@ -2,7 +2,7 @@ package com.mth.jMeterTask;
 
 import com.mth.jMeterTask.exceptions.JMeterException;
 import com.mth.jMeterTask.models.TestPerson;
-import com.mth.jMeterTask.services.PersonService;
+import com.mth.jMeterTask.services.TestPersonService;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @RequiredArgsConstructor
 public class JMeterTaskApplication implements CommandLineRunner {
 
-	private final PersonService personService;
+	private final TestPersonService testPersonService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(JMeterTaskApplication.class, args);
@@ -66,7 +66,7 @@ public class JMeterTaskApplication implements CommandLineRunner {
 		listOfPerson.add(testPerson19);
 
       for (TestPerson ofPerson : listOfPerson) {
-        personService.create(ofPerson.getName(), ofPerson.getLastname(), ofPerson.getBirthNumber());
+        testPersonService.create(ofPerson.getName(), ofPerson.getLastname(), ofPerson.getBirthNumber());
       }
 	}
 
