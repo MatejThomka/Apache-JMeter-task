@@ -2,6 +2,8 @@ package com.mth.jMeterTask.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -21,6 +23,7 @@ import lombok.experimental.FieldDefaults;
 public class TestPerson {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   Long id;
   @Column(name = "name")
   String name;
@@ -29,4 +32,9 @@ public class TestPerson {
   @Column(name = "birth_number")
   String birthNumber;
 
+  public TestPerson(String name, String lastname, String birthNumber) {
+    this.setName(name);
+    this.setLastname(lastname);
+    this.setBirthNumber(birthNumber);
+  }
 }
