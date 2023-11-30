@@ -126,15 +126,10 @@ public class TestPersonServiceImpl implements TestPersonService {
     return false;
   }
 
-  private String dateCorrection(String birthNumber, boolean isFemale) throws JMeterException {
+  private String dateCorrection(String birthNumber, boolean isFemale) {
     String searchedDate = (birthNumber != null) ? birthNumber.replaceAll("-", "") : null;
     String cleanDate = null;
     int date;
-    Gender gender = Gender.MALE;
-
-    if (isFemale) {
-      gender = Gender.FEMALE;
-    }
 
     assert searchedDate != null;
     if (searchedDate.length() == 4) {
@@ -157,10 +152,6 @@ public class TestPersonServiceImpl implements TestPersonService {
     }
 
     cleanDate = String.valueOf(date);
-
-    if (invalidBirthNumber(cleanDate, gender)){
-      throw new BirthNumberException("Birth number is invalid!");
-    }
 
     return cleanDate;
   }
