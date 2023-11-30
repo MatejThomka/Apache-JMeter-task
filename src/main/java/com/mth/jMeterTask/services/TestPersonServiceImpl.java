@@ -30,7 +30,7 @@ public class TestPersonServiceImpl implements TestPersonService {
     String birthNumber = testPerson.getBirthNumber();
 
     if (invalidBirthNumber(birthNumber, testPerson.getGender())) {
-      throw new BirthNumberException("Birth number is invalid!");
+      throw new BirthNumberException();
     }
 
     return testPerson;
@@ -38,38 +38,60 @@ public class TestPersonServiceImpl implements TestPersonService {
 
   @Override
   public List<TestPerson> search(TestPerson testPerson) throws JMeterException {
-    String nameRegex = (testPerson.getName() != null) ? testPerson.getName().replaceAll("\\*", "") : null;
-    String lastnameRegex = (testPerson.getLastname() != null) ? testPerson.getLastname().replaceAll("\\*", "") : null;
+    String nameRegex =
+        (testPerson.getName() != null) ? testPerson.getName().replaceAll("\\*", "") : null;
+    String lastnameRegex =
+        (testPerson.getLastname() != null) ? testPerson.getLastname().replaceAll("\\*", "") : null;
 
     Set<TestPerson> testPersonList = new HashSet<>();
 
-    if (testPerson.getId() != null) {
-      testPersonList.add(testPersonRepository.findById(testPerson.getId()));
-    } else if (nameRegex != null && lastnameRegex == null && testPerson.getBirthNumber() == null){
-      testPersonList.addAll(testPersonRepository.findAllByNameStartingWith(nameRegex));
-    } else if (nameRegex == null && lastnameRegex != null && testPerson.getBirthNumber() == null) {
-      testPersonList.addAll(testPersonRepository.findAllByLastnameStartingWith(lastnameRegex));
-    } else if (nameRegex != null && lastnameRegex != null && testPerson.getBirthNumber() == null) {
-      testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndLastnameStartingWith(nameRegex, lastnameRegex));
-    } else if (nameRegex == null && lastnameRegex == null && testPerson.getBirthNumber() != null) {
-      testPersonList.addAll(testPersonRepository.findAllByBirthNumberStartingWith(dateCorrection(testPerson.getBirthNumber(), false)));
-      testPersonList.addAll(testPersonRepository.findAllByBirthNumberStartingWith(dateCorrection(testPerson.getBirthNumber(), true)));
-    } else if (nameRegex != null && lastnameRegex == null) {
-      testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndBirthNumberStartingWith(nameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
-      testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndBirthNumberStartingWith(nameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
-    } else if (nameRegex == null && lastnameRegex != null) {
-      testPersonList.addAll(testPersonRepository.findAllByLastnameStartingWithAndBirthNumberStartingWith(lastnameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
-      testPersonList.addAll(testPersonRepository.findAllByLastnameStartingWithAndBirthNumberStartingWith(lastnameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
-    } else if (nameRegex != null) {
-      testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndLastnameStartingWithAndBirthNumberStartingWith(nameRegex, lastnameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
-      testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndLastnameStartingWithAndBirthNumberStartingWith(nameRegex, lastnameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
+    switch (getSearchType(testPerson)) {
+      case BY_ID -> testPersonList.add(testPersonRepository.findById(testPerson.getId()));
+      case BY_NAME ->
+          testPersonList.addAll(testPersonRepository.findAllByNameStartingWith(nameRegex));
+      case BY_LASTNAME ->
+          testPersonList.addAll(testPersonRepository.findAllByLastnameStartingWith(lastnameRegex));
+      case BY_NAME_AND_LASTNAME -> testPersonList.addAll(
+          testPersonRepository.findAllByNameStartingWithAndLastnameStartingWith(nameRegex,
+              lastnameRegex));
+      case BY_DATE -> {
+        testPersonList.addAll(testPersonRepository.findAllByBirthNumberStartingWith(
+            dateCorrection(testPerson.getBirthNumber(), false)));
+        testPersonList.addAll(testPersonRepository.findAllByBirthNumberStartingWith(
+            dateCorrection(testPerson.getBirthNumber(), true)));
+      }
+      case BY_NAME_AND_DATE -> {
+        testPersonList.addAll(
+            testPersonRepository.findAllByNameStartingWithAndBirthNumberStartingWith(nameRegex,
+                dateCorrection(testPerson.getBirthNumber(), false)));
+        testPersonList.addAll(
+            testPersonRepository.findAllByNameStartingWithAndBirthNumberStartingWith(nameRegex,
+                dateCorrection(testPerson.getBirthNumber(), true)));
+      }
+      case BY_LASTNAME_AND_DATE -> {
+        testPersonList.addAll(
+            testPersonRepository.findAllByLastnameStartingWithAndBirthNumberStartingWith(
+                lastnameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
+        testPersonList.addAll(
+            testPersonRepository.findAllByLastnameStartingWithAndBirthNumberStartingWith(
+                lastnameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
+      }
+      case BY_NAME_AND_LASTNAME_AND_DATE -> {
+        testPersonList.addAll(
+            testPersonRepository.findAllByNameStartingWithAndLastnameStartingWithAndBirthNumberStartingWith(
+                nameRegex, lastnameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
+        testPersonList.addAll(
+            testPersonRepository.findAllByNameStartingWithAndLastnameStartingWithAndBirthNumberStartingWith(
+                nameRegex, lastnameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
+      }
+      case null -> testPersonList.add(null);
     }
 
     List<TestPerson> personList = new ArrayList<>(testPersonList);
 
     for (TestPerson person : personList) {
       if (invalidBirthNumber(person.getBirthNumber(), person.getGender())) {
-        throw new BirthNumberException("Birth number is invalid!");
+        throw new BirthNumberException();
       }
     }
 
@@ -100,7 +122,8 @@ public class TestPersonServiceImpl implements TestPersonService {
   }
 
   @Override
-  public void create(String name, String lastname, String birthNumber, Gender gender) throws JMeterException{
+  public void create(String name, String lastname, String birthNumber, Gender gender)
+      throws JMeterException {
     TestPerson testPerson = new TestPerson(name, lastname, birthNumber, gender);
     if (testPersonRepository.exists(Example.of(testPerson))) {
       throw new JMeterException("This user already exist!");
@@ -162,6 +185,32 @@ public class TestPersonServiceImpl implements TestPersonService {
     cleanDate = String.valueOf(date);
 
     return cleanDate;
+  }
+
+  private SearchType getSearchType(TestPerson testPerson) {
+
+    if (testPerson.getId() != null) {
+      return SearchType.BY_ID;
+    } else if (testPerson.getName() != null && testPerson.getLastname() == null &&
+        testPerson.getBirthNumber() == null) {
+      return SearchType.BY_NAME;
+    } else if (testPerson.getName() == null && testPerson.getLastname() != null &&
+        testPerson.getBirthNumber() == null) {
+      return SearchType.BY_LASTNAME;
+    } else if (testPerson.getName() == null && testPerson.getLastname() == null &&
+        testPerson.getBirthNumber() != null) {
+      return SearchType.BY_DATE;
+    } else if (testPerson.getName() != null && testPerson.getLastname() != null &&
+        testPerson.getBirthNumber() == null) {
+      return SearchType.BY_NAME_AND_LASTNAME;
+    } else if (testPerson.getName() != null && testPerson.getLastname() == null) {
+      return SearchType.BY_NAME_AND_DATE;
+    } else if (testPerson.getName() == null && testPerson.getLastname() != null) {
+      return SearchType.BY_LASTNAME_AND_DATE;
+    } else if (testPerson.getName() != null) {
+      return SearchType.BY_NAME_AND_LASTNAME_AND_DATE;
+    }
+    return null;
   }
 }
 
