@@ -40,13 +40,6 @@ public class TestPersonServiceImpl implements TestPersonService {
   public List<TestPerson> search(TestPerson testPerson) throws JMeterException {
     String nameRegex = (testPerson.getName() != null) ? testPerson.getName().replaceAll("\\*", "") : null;
     String lastnameRegex = (testPerson.getLastname() != null) ? testPerson.getLastname().replaceAll("\\*", "") : null;
-//    String birthNumber = (testPerson.getBirthNumber() != null) ? dateCorrection(testPerson.getBirthNumber()) : null;
-
-//    if (birthNumber != null) {
-//      if (invalidBirthNumber(birthNumber)){
-//        throw new BirthNumberException("Birth number is invalid!");
-//      }
-//    }
 
 
     List<TestPerson> testPersonList = new ArrayList<>();
@@ -58,8 +51,10 @@ public class TestPersonServiceImpl implements TestPersonService {
     } else if (nameRegex != null && lastnameRegex != null && testPerson.getBirthNumber() == null) {
       testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndLastnameStartingWith(nameRegex, lastnameRegex));
     } else if (nameRegex == null && lastnameRegex == null && testPerson.getBirthNumber() != null) {
-//      testPersonList.addAll(testPersonRepository.findAllByBirthNumberContaining(birthNumber));
+      testPersonList.addAll(testPersonRepository.findAllByBirthNumberStartingWith(dateCorrection(testPerson.getBirthNumber(), false)));
+      testPersonList.addAll(testPersonRepository.findAllByBirthNumberStartingWith(dateCorrection(testPerson.getBirthNumber(), true)));
     }
+
 
 
     return testPersonList;
@@ -122,39 +117,35 @@ public class TestPersonServiceImpl implements TestPersonService {
     return false;
   }
 
-//  private List<String> dateCorrection(String birthNumber) {
-//    List<String> dates = List.of("date1", "date2");
-//    String cleanDate = (birthNumber != null) ? birthNumber.replaceAll("-", "") : null;
-//
-//    StringBuilder stringBuilder = new StringBuilder();
-//
-//
-//
-//    if (cleanDate != null){
-//      for (int i = 0; i < dates.size() - 1; i++) {
-//        for (int j = 0; j < cleanDate.length() - 1; j++) {
-//          if (i == 1 && j == 6) {
-//            stringBuilder.append('5');
-//          } else {
-//            stringBuilder.append(cleanDate.charAt(j));
-//          }
-//          dates.add(stringBuilder.toString());
-//          dates.remove(2);
-//        }
-//      }
-//
-//      if (cleanDate.length() == 4){
-//        dateV1 = cleanDate.substring(2, 4);
-//        dateV2 = cl
-//      } else if (cleanDate.length() == 6) {
-//        dateV1 = cleanDate.substring(2, 6);
-//      } else if (cleanDate.length() == 8) {
-//        dateV1 = cleanDate.substring(2, 8);
-//      }
-//    }
-//
-//
-//    return date;
-//  }
+  private String dateCorrection(String birthNumber, boolean isFemale) {
+    String searchedDate = (birthNumber != null) ? birthNumber.replaceAll("-", "") : null;
+    String cleanDate = null;
+    int date;
+
+    assert searchedDate != null;
+    if (searchedDate.length() == 4) {
+      cleanDate = searchedDate.substring(2, 4);
+    } else if (searchedDate.length() == 6) {
+      cleanDate = searchedDate.substring(2, 6);
+    } else if (searchedDate.length() == 8) {
+      cleanDate = searchedDate.substring(2, 8);
+    }
+
+
+    assert cleanDate != null;
+    date = Integer.parseInt(cleanDate);
+
+
+    if (cleanDate.length() == 4 && isFemale) {
+      date += 50;
+    } else if (cleanDate.length() == 6 && isFemale) {
+      date += 5000;
+    }
+
+
+    cleanDate = String.valueOf(date);
+
+    return cleanDate;
+  }
 }
 
