@@ -1,5 +1,6 @@
 package com.mth.jMeterTask.models;
 
+import com.mth.jMeterTask.models.enums.Gender;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,6 +32,8 @@ public class TestPerson {
   String lastname;
   @Column(name = "birth_number")
   String birthNumber;
+  @Column(name = "gender")
+  Gender gender;
 
   public TestPerson(String name, String lastname, String birthNumber) {
     this.setName(name);
