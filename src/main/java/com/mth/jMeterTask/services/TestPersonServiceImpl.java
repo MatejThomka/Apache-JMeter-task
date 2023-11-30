@@ -1,5 +1,6 @@
 package com.mth.jMeterTask.services;
 
+import com.mth.jMeterTask.entities.enums.SearchType;
 import com.mth.jMeterTask.exceptions.BirthNumberException;
 import com.mth.jMeterTask.exceptions.JMeterException;
 import com.mth.jMeterTask.entities.TestPerson;
@@ -11,19 +12,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class TestPersonServiceImpl implements TestPersonService {
 
   private final TestPersonRepository testPersonRepository;
-
-  @Autowired
-  public TestPersonServiceImpl(TestPersonRepository testPersonRepository) {
-    this.testPersonRepository = testPersonRepository;
-  }
 
   @Override
   public TestPerson detail(Long id) throws JMeterException {
