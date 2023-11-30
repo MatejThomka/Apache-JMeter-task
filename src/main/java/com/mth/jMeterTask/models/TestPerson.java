@@ -1,5 +1,6 @@
 package com.mth.jMeterTask.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mth.jMeterTask.models.enums.Gender;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,6 +35,7 @@ public class TestPerson {
   String lastname;
   @Column(name = "birth_number")
   String birthNumber;
+  @JsonIgnore
   @Column(name = "gender")
   Gender gender;
 
