@@ -9,12 +9,22 @@ import org.springframework.stereotype.Repository;
 public interface TestPersonRepository extends JpaRepository<TestPerson, Integer> {
 
   TestPerson findById(Long id);
+
   List<TestPerson> findAllByNameStartingWith(String name);
+
   List<TestPerson> findAllByLastnameStartingWith(String lastname);
+
   List<TestPerson> findAllByNameStartingWithAndLastnameStartingWith(String name, String lastname);
+
   List<TestPerson> findAllByBirthNumberStartingWith(String yearMonthDay);
-  List<TestPerson> findAllByNameStartingWithAndBirthNumberStartingWith(String name, String yearMonthDay);
-  List<TestPerson> findAllByLastnameStartingWithAndBirthNumberStartingWith(String lastname, String yearMonthDay);
-  List<TestPerson> findAllByNameStartingWithAndLastnameStartingWithAndBirthNumberStartingWith(String name, String lastname, String yearMonthDay);
+
+  List<TestPerson> findAllByNameStartingWithAndBirthNumberStartingWith(String name,
+                                                                       String yearMonthDay);
+
+  List<TestPerson> findAllByLastnameStartingWithAndBirthNumberStartingWith(String lastname,
+                                                                           String yearMonthDay);
+
+  List<TestPerson> findAllByNameStartingWithAndLastnameStartingWithAndBirthNumberStartingWith(
+      String name, String lastname, String yearMonthDay);
 }
 
