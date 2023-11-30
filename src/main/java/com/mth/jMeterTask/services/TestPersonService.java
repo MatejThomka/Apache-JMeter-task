@@ -8,7 +8,11 @@ import java.util.List;
 public interface TestPersonService {
 
   TestPerson detail(Long id) throws JMeterException;
+
   List<TestPerson> search(TestPerson testPerson) throws JMeterException;
+
   TestPerson update(Long id, TestPerson testPerson) throws JMeterException;
-  void create(String name, String lastname, String birthNumber, Gender gender) throws JMeterException;
+
+  void create(String name, String lastname, String birthNumber, Gender gender)
+      throws JMeterException;
 }
