@@ -116,6 +116,8 @@ public class TestPersonServiceImpl implements TestPersonService {
       } catch (ParseException e) {
         throw new JMeterException(e.getMessage());
       }
+    } else {
+      return true;
     }
     return false;
   }
