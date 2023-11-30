@@ -35,9 +35,10 @@ public class TestPerson {
   @Column(name = "gender")
   Gender gender;
 
-  public TestPerson(String name, String lastname, String birthNumber) {
+  public TestPerson(String name, String lastname, String birthNumber, Gender gender) {
     this.setName(name);
     this.setLastname(lastname);
     this.setBirthNumber(birthNumber);
+    this.setGender(gender);
   }
 }
