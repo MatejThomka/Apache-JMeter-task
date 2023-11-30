@@ -1,8 +1,8 @@
 package com.mth.jMeterTask.services;
 
 import com.mth.jMeterTask.exceptions.JMeterException;
-import com.mth.jMeterTask.models.TestPerson;
-import com.mth.jMeterTask.models.enums.Gender;
+import com.mth.jMeterTask.entities.TestPerson;
+import com.mth.jMeterTask.entities.enums.Gender;
 import java.util.List;
 
 public interface TestPersonService {

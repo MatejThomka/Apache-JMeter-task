@@ -1,6 +1,6 @@
 package com.mth.jMeterTask.repositories;
 
-import com.mth.jMeterTask.models.TestPerson;
+import com.mth.jMeterTask.entities.TestPerson;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

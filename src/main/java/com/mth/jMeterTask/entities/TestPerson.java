@@ -1,7 +1,7 @@
-package com.mth.jMeterTask.models;
+package com.mth.jMeterTask.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.mth.jMeterTask.models.enums.Gender;
+import com.mth.jMeterTask.entities.enums.Gender;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

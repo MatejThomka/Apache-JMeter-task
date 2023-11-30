@@ -1,10 +1,10 @@
 package com.mth.jMeterTask;
 
-import static com.mth.jMeterTask.models.enums.Gender.FEMALE;
-import static com.mth.jMeterTask.models.enums.Gender.MALE;
+import static com.mth.jMeterTask.entities.enums.Gender.FEMALE;
+import static com.mth.jMeterTask.entities.enums.Gender.MALE;
 
 import com.mth.jMeterTask.exceptions.JMeterException;
-import com.mth.jMeterTask.models.TestPerson;
+import com.mth.jMeterTask.entities.TestPerson;
 import com.mth.jMeterTask.services.TestPersonService;
 import java.util.ArrayList;
 import java.util.List;

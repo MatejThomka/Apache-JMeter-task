@@ -1,7 +1,7 @@
 package com.mth.jMeterTask.controllers;
 
 import com.mth.jMeterTask.exceptions.JMeterException;
-import com.mth.jMeterTask.models.TestPerson;
+import com.mth.jMeterTask.entities.TestPerson;
 import com.mth.jMeterTask.services.TestPersonService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
