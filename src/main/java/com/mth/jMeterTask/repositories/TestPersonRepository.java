@@ -13,5 +13,6 @@ public interface TestPersonRepository extends JpaRepository<TestPerson, Integer>
   List<TestPerson> findAllByLastnameStartingWith(String lastname);
   List<TestPerson> findAllByNameStartingWithAndLastnameStartingWith(String name, String lastname);
   List<TestPerson> findAllByBirthNumberStartingWith(String yearMonthDay);
+  List<TestPerson> findAllByNameStartingWithAndBirthNumberStartingWith(String name, String yearMonthDay);
 }
 

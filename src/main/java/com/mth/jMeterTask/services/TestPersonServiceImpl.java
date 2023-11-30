@@ -9,7 +9,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
@@ -42,7 +44,8 @@ public class TestPersonServiceImpl implements TestPersonService {
     String lastnameRegex = (testPerson.getLastname() != null) ? testPerson.getLastname().replaceAll("\\*", "") : null;
 
 
-    List<TestPerson> testPersonList = new ArrayList<>();
+
+    Set<TestPerson> testPersonList = new HashSet<>();
 
     if (nameRegex != null && lastnameRegex == null && testPerson.getBirthNumber() == null){
       testPersonList.addAll(testPersonRepository.findAllByNameStartingWith(nameRegex));
@@ -53,11 +56,13 @@ public class TestPersonServiceImpl implements TestPersonService {
     } else if (nameRegex == null && lastnameRegex == null && testPerson.getBirthNumber() != null) {
       testPersonList.addAll(testPersonRepository.findAllByBirthNumberStartingWith(dateCorrection(testPerson.getBirthNumber(), false)));
       testPersonList.addAll(testPersonRepository.findAllByBirthNumberStartingWith(dateCorrection(testPerson.getBirthNumber(), true)));
+    } else if (nameRegex != null && lastnameRegex == null && testPerson.getBirthNumber() != null) {
+      testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndBirthNumberStartingWith(nameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
+      testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndBirthNumberStartingWith(nameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
     }
 
 
-
-    return testPersonList;
+    return testPersonList.stream().toList();
   }
 
   @Override
