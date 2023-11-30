@@ -8,7 +8,6 @@ import com.mth.jMeterTask.repositories.TestPersonRepository;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -83,8 +82,7 @@ public class TestPersonServiceImpl implements TestPersonService {
   @Override
   public TestPerson update(Long id, TestPerson testPerson) throws JMeterException {
     TestPerson updatingPerson = testPersonRepository.findById(id);
-
-    String birthNumber = testPerson.getBirthNumber();
+    String birthNumber = updatingPerson.getBirthNumber();
 
     if (invalidBirthNumber(birthNumber, updatingPerson.getGender())) {
       throw new BirthNumberException("Birth number is invalid!");
@@ -129,7 +127,7 @@ public class TestPersonServiceImpl implements TestPersonService {
       dateFormat.setLenient(false);
 
       try {
-        Date date = dateFormat.parse(String.format("%02d%02d%02d", year, month, day));
+        dateFormat.parse(String.format("%02d%02d%02d", year, month, day));
       } catch (ParseException e) {
         throw new JMeterException(e.getMessage());
       }
