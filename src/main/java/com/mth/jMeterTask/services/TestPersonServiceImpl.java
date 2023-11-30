@@ -7,7 +7,6 @@ import com.mth.jMeterTask.models.enums.Gender;
 import com.mth.jMeterTask.repositories.TestPersonRepository;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +30,9 @@ public class TestPersonServiceImpl implements TestPersonService {
 
     TestPerson testPerson = testPersonRepository.findById(id);
 
-    if (invalidBirthNumber(testPerson)) {
+    String birthNumber = testPerson.getBirthNumber();
+
+    if (invalidBirthNumber(birthNumber, testPerson.getGender())) {
       throw new BirthNumberException("Birth number is invalid!");
     }
 
@@ -42,8 +43,6 @@ public class TestPersonServiceImpl implements TestPersonService {
   public List<TestPerson> search(TestPerson testPerson) throws JMeterException {
     String nameRegex = (testPerson.getName() != null) ? testPerson.getName().replaceAll("\\*", "") : null;
     String lastnameRegex = (testPerson.getLastname() != null) ? testPerson.getLastname().replaceAll("\\*", "") : null;
-
-
 
     Set<TestPerson> testPersonList = new HashSet<>();
 
@@ -59,6 +58,9 @@ public class TestPersonServiceImpl implements TestPersonService {
     } else if (nameRegex != null && lastnameRegex == null && testPerson.getBirthNumber() != null) {
       testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndBirthNumberStartingWith(nameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
       testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndBirthNumberStartingWith(nameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
+    } else if (nameRegex == null && lastnameRegex != null && testPerson.getBirthNumber() != null) {
+      testPersonList.addAll(testPersonRepository.findAllByLastnameStartingWithAndBirthNumberStartingWith(lastnameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
+      testPersonList.addAll(testPersonRepository.findAllByLastnameStartingWithAndBirthNumberStartingWith(lastnameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
     }
 
 
@@ -69,7 +71,9 @@ public class TestPersonServiceImpl implements TestPersonService {
   public TestPerson update(Long id, TestPerson testPerson) throws JMeterException {
     TestPerson updatingPerson = testPersonRepository.findById(id);
 
-    if (invalidBirthNumber(updatingPerson)) {
+    String birthNumber = testPerson.getBirthNumber();
+
+    if (invalidBirthNumber(birthNumber, updatingPerson.getGender())) {
       throw new BirthNumberException("Birth number is invalid!");
     }
 
@@ -96,15 +100,15 @@ public class TestPersonServiceImpl implements TestPersonService {
     testPersonRepository.save(testPerson);
   }
 
-  private boolean invalidBirthNumber(TestPerson testPerson) throws JMeterException {
+  private boolean invalidBirthNumber(String birthNumber, Gender gender) throws JMeterException {
 
-    if (testPerson.getBirthNumber().matches("\\d{6}/\\d{3,4}")) {
-      int day = Integer.parseInt(testPerson.getBirthNumber().substring(4, 6));
-      int month = Integer.parseInt(testPerson.getBirthNumber().substring(2, 4));
-      int year = Integer.parseInt(testPerson.getBirthNumber().substring(0, 2));
+    if (birthNumber.matches("\\d{6}/\\d{3,4}")) {
+      int day = Integer.parseInt(birthNumber.substring(4, 6));
+      int month = Integer.parseInt(birthNumber.substring(2, 4));
+      int year = Integer.parseInt(birthNumber.substring(0, 2));
 
-      if (testPerson.getGender() == Gender.FEMALE) {
-        month = Integer.parseInt(testPerson.getBirthNumber().substring(2, 4));
+      if (gender == Gender.FEMALE) {
+        month = Integer.parseInt(birthNumber.substring(2, 4));
         month -= 50;
       }
 
@@ -122,10 +126,15 @@ public class TestPersonServiceImpl implements TestPersonService {
     return false;
   }
 
-  private String dateCorrection(String birthNumber, boolean isFemale) {
+  private String dateCorrection(String birthNumber, boolean isFemale) throws JMeterException {
     String searchedDate = (birthNumber != null) ? birthNumber.replaceAll("-", "") : null;
     String cleanDate = null;
     int date;
+    Gender gender = Gender.MALE;
+
+    if (isFemale) {
+      gender = Gender.FEMALE;
+    }
 
     assert searchedDate != null;
     if (searchedDate.length() == 4) {
@@ -147,8 +156,11 @@ public class TestPersonServiceImpl implements TestPersonService {
       date += 5000;
     }
 
-
     cleanDate = String.valueOf(date);
+
+    if (invalidBirthNumber(cleanDate, gender)){
+      throw new BirthNumberException("Birth number is invalid!");
+    }
 
     return cleanDate;
   }
