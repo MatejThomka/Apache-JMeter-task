@@ -3,6 +3,7 @@ package com.mth.jMeterTask.controllers;
 import com.mth.jMeterTask.exceptions.JMeterException;
 import com.mth.jMeterTask.models.TestPerson;
 import com.mth.jMeterTask.services.TestPersonService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,9 +28,9 @@ public class TestPersonController {
   }
 
   @PostMapping("/search")
-  ResponseEntity<TestPerson> search(@RequestBody(required = false) Long id, @RequestBody(required = false) String namePrefix, @RequestBody(required = false) String lastnamePrefix, @RequestBody(required = false) String date)
+  ResponseEntity<List<TestPerson>> search(@RequestBody TestPerson testPerson)
       throws JMeterException {
-    return ResponseEntity.ok().body(testPersonService.search(id, namePrefix, lastnamePrefix, date));
+    return ResponseEntity.ok().body(testPersonService.search(testPerson));
   }
 
   @PatchMapping("{id}/update")
