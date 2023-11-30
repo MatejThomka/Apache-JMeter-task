@@ -88,8 +88,8 @@ public class TestPersonServiceImpl implements TestPersonService {
   }
 
   @Override
-  public void create(String name, String lastname, String birthNumber) throws JMeterException{
-    TestPerson testPerson = new TestPerson(name, lastname, birthNumber);
+  public void create(String name, String lastname, String birthNumber, Gender gender) throws JMeterException{
+    TestPerson testPerson = new TestPerson(name, lastname, birthNumber, gender);
     if (testPersonRepository.exists(Example.of(testPerson))) {
       throw new JMeterException("This user already exist!");
     }

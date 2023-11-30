@@ -69,7 +69,7 @@ public class JMeterTaskApplication implements CommandLineRunner {
 		listOfPerson.add(testPerson19);
 
       for (TestPerson ofPerson : listOfPerson) {
-        testPersonService.create(ofPerson.getName(), ofPerson.getLastname(), ofPerson.getBirthNumber());
+        testPersonService.create(ofPerson.getName(), ofPerson.getLastname(), ofPerson.getBirthNumber(), ofPerson.getGender());
       }
 	}
 
