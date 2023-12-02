@@ -26,6 +26,13 @@ public class TestPersonServiceImpl implements TestPersonService {
 
   private final TestPersonRepository testPersonRepository;
 
+  /**
+   * Retrieves details about a person based on the provided ID.
+   *
+   * @param id - Identifier of the searched person.
+   * @exception TestPersonNotFoundException - Thrown if a person with the given ID is not found.
+   * @return TestPersonRecord - A record containing the name, surname, and birth number of the person.
+   */
   @Override
   public TestPersonRecord detail(@NonNull Integer id) throws JMeterException {
 
@@ -38,56 +45,74 @@ public class TestPersonServiceImpl implements TestPersonService {
     return new TestPersonRecord(testPerson.getName(), testPerson.getLastname(), testPerson.getBirthNumber());
   }
 
+  /**
+   * Searches and returns a list of persons based on the criteria specified in TestPerson.
+   *
+   * @param testPerson - An object containing search criteria.
+   * @return List<TestPersonRecord> - A list of records containing the name, surname, and birth number of the found persons.
+   * @throws JMeterException - Thrown for general errors in JMeter.
+   */
   @Override
   public List<TestPersonRecord> search(TestPerson testPerson) throws JMeterException {
+
+    log.info("Search users and list them by searching options. " + testPerson);
 
     String nameRegex = (testPerson.getName() != null) ? testPerson.getName().replaceAll("\\*", "") : null;
     String lastnameRegex = (testPerson.getLastname() != null) ? testPerson.getLastname().replaceAll("\\*", "") : null;
 
-    Set<TestPerson> testPersonList = new HashSet<>();
+    Set<TestPerson> clearPersonList = new HashSet<>();
 
     switch (getSearchType(testPerson)) {
-      case BY_ID -> testPersonList.add(testPersonRepository.findById(testPerson.getId()).orElseThrow(() -> new TestPersonNotFoundException(testPerson.getId() + "not found!")));
-      case BY_NAME -> testPersonList.addAll(testPersonRepository.findAllByNameStartingWith(nameRegex));
-      case BY_LASTNAME -> testPersonList.addAll(testPersonRepository.findAllByLastnameStartingWith(lastnameRegex));
-      case BY_NAME_AND_LASTNAME -> testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndLastnameStartingWith(nameRegex, lastnameRegex));
+      case BY_ID -> clearPersonList.add(testPersonRepository.findById(testPerson.getId()).orElseThrow(() -> new TestPersonNotFoundException(testPerson.getId() + "not found!")));
+      case BY_NAME -> clearPersonList.addAll(testPersonRepository.findAllByNameStartingWith(nameRegex));
+      case BY_LASTNAME -> clearPersonList.addAll(testPersonRepository.findAllByLastnameStartingWith(lastnameRegex));
+      case BY_NAME_AND_LASTNAME -> clearPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndLastnameStartingWith(nameRegex, lastnameRegex));
       case BY_DATE -> {
-        testPersonList.addAll(testPersonRepository.findAllByBirthNumberStartingWith(dateCorrection(testPerson.getBirthNumber(), false)));
-        testPersonList.addAll(testPersonRepository.findAllByBirthNumberStartingWith(dateCorrection(testPerson.getBirthNumber(), true)));
+        clearPersonList.addAll(testPersonRepository.findAllByBirthNumberStartingWith(dateCorrection(testPerson.getBirthNumber(), false)));
+        clearPersonList.addAll(testPersonRepository.findAllByBirthNumberStartingWith(dateCorrection(testPerson.getBirthNumber(), true)));
       }
       case BY_NAME_AND_DATE -> {
-        testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndBirthNumberStartingWith(nameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
-        testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndBirthNumberStartingWith(nameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
+        clearPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndBirthNumberStartingWith(nameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
+        clearPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndBirthNumberStartingWith(nameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
       }
       case BY_LASTNAME_AND_DATE -> {
-        testPersonList.addAll(testPersonRepository.findAllByLastnameStartingWithAndBirthNumberStartingWith(lastnameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
-        testPersonList.addAll(testPersonRepository.findAllByLastnameStartingWithAndBirthNumberStartingWith(lastnameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
+        clearPersonList.addAll(testPersonRepository.findAllByLastnameStartingWithAndBirthNumberStartingWith(lastnameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
+        clearPersonList.addAll(testPersonRepository.findAllByLastnameStartingWithAndBirthNumberStartingWith(lastnameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
       }
       case BY_NAME_AND_LASTNAME_AND_DATE -> {
-        testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndLastnameStartingWithAndBirthNumberStartingWith(nameRegex, lastnameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
-        testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndLastnameStartingWithAndBirthNumberStartingWith(nameRegex, lastnameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
+        clearPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndLastnameStartingWithAndBirthNumberStartingWith(nameRegex, lastnameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
+        clearPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndLastnameStartingWithAndBirthNumberStartingWith(nameRegex, lastnameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
       }
-      case null -> testPersonList.add(null);
+      case null -> clearPersonList.add(null);
     }
 
-    List<TestPerson> personList = new ArrayList<>(testPersonList);
+    List<TestPerson> personList = new ArrayList<>(clearPersonList);
     List<TestPersonRecord> outputList = new ArrayList<>();
 
 
     for (TestPerson person : personList) {
-      invalidBirthNumber(person.getBirthNumber(), testPerson.getGender());
+      invalidBirthNumber(person.getBirthNumber(), person.getGender());
       outputList.add(new TestPersonRecord(person.getName(), person.getLastname(), person.getBirthNumber()));
     }
 
     return outputList;
   }
 
+  /**
+   * Updates information about a person based on the provided ID and new details.
+   *
+   * @param id - Identifier of the person being updated.
+   * @param testPerson - New information about the person.
+   * @exception TestPersonNotFoundException - Thrown if a person with the given ID is not found.
+   * @return TestPersonRecord - A record containing the updated name, surname, and birth number of the person.
+   */
   @Override
   public TestPersonRecord update(@NonNull Integer id,
                            TestPerson testPerson) throws JMeterException {
 
-    TestPerson updatingPerson = testPersonRepository.findById(id).orElseThrow(() -> new TestPersonNotFoundException(id + " not found!"));
+    log.info("Updating ID " + id + " with new details.");
 
+    TestPerson updatingPerson = testPersonRepository.findById(id).orElseThrow(() -> new TestPersonNotFoundException(id + " not found!"));
 
     invalidBirthNumber(updatingPerson.getBirthNumber(), testPerson.getGender());
 
@@ -105,8 +130,18 @@ public class TestPersonServiceImpl implements TestPersonService {
     return new TestPersonRecord(updatingPerson.getName(), updatingPerson.getLastname(), updatingPerson.getBirthNumber());
   }
 
+  /**
+   * Validates the birth number based on gender and data structure.
+   *
+   * @param birthNumber - Birth number of the person.
+   * @param gender - Gender of the person.
+   * @throws JMeterException - Thrown for general errors in JMeter or invalid birth numbers.
+   */
   private void invalidBirthNumber(String birthNumber,
                                   Gender gender) throws JMeterException {
+
+    log.info("Validate birth number " + birthNumber);
+
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMdd");
     dateFormat.setLenient(false);
 
@@ -115,6 +150,7 @@ public class TestPersonServiceImpl implements TestPersonService {
     int day = Integer.parseInt(birthNumber.substring(4, 6));
     int month = Integer.parseInt(birthNumber.substring(2, 4));
     int year = Integer.parseInt(birthNumber.substring(0, 2));
+
 
     if (gender == Gender.FEMALE) {
       month -= 50;
@@ -133,6 +169,8 @@ public class TestPersonServiceImpl implements TestPersonService {
                                    int year,
                                    SimpleDateFormat format) throws JMeterException {
 
+    log.info("Validate old birth number before 1954.");
+
     if (year > 53) throw new BirthNumberException("Incorrect year of birth!");
 
 
@@ -148,6 +186,7 @@ public class TestPersonServiceImpl implements TestPersonService {
                                    int year,
                                    SimpleDateFormat format,
                                    Long birthNumber) throws JMeterException {
+    log.info("Validate new version of birth number after 1954");
 
     if (birthNumber % 11 != 0) throw new BirthNumberException("Birth number is incorrect! Not dividable with 11!");
 
@@ -158,9 +197,17 @@ public class TestPersonServiceImpl implements TestPersonService {
     }
   }
 
-
+  /**
+   * Modifies the date for better searching in the search method.
+   *
+   * @param birthNumber - Birth number of the person.
+   * @param isFemale - Flag indicating whether the person is female.
+   * @return String - Modified birth number for searching.
+   */
   private String dateCorrection(String birthNumber,
                                 boolean isFemale) {
+
+    log.info("Clear date from '-' for better searching in search method. " + birthNumber);
 
     String searchedDate = (birthNumber != null) ? birthNumber.replaceAll("-", "") : null;
     String cleanDate = null;
@@ -191,7 +238,15 @@ public class TestPersonServiceImpl implements TestPersonService {
     return cleanDate;
   }
 
+  /**
+   * Determines the type of search query to be used based on the provided criteria.
+   *
+   * @param testPerson - A TestPerson object with search criteria.
+   * @return SearchType - The search type according to the SearchType enumeration.
+   */
   private SearchType getSearchType(TestPerson testPerson) {
+
+    log.info("Find which type of searching query will be used and return it.");
 
     if (testPerson.getId() != null) {
       return SearchType.BY_ID;
