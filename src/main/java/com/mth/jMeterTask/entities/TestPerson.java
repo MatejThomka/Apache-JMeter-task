@@ -1,6 +1,5 @@
 package com.mth.jMeterTask.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mth.jMeterTask.entities.enums.Gender;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,11 +24,10 @@ public class TestPerson {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  Long id;
+  Integer id;
   String name;
   String lastname;
   String birthNumber;
-  @JsonIgnore
   Gender gender;
 
   public TestPerson(String name, String lastname, String birthNumber, Gender gender) {
