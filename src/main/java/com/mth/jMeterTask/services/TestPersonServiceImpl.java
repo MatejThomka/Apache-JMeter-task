@@ -13,11 +13,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TestPersonServiceImpl implements TestPersonService {
 
   private final TestPersonRepository testPersonRepository;
@@ -29,60 +31,39 @@ public class TestPersonServiceImpl implements TestPersonService {
 
     String birthNumber = testPerson.getBirthNumber();
 
-    if (invalidBirthNumber(birthNumber, testPerson.getGender())) {
-      throw new BirthNumberException();
-    }
+    invalidBirthNumber(birthNumber, testPerson.getGender());
 
     return testPerson;
   }
 
   @Override
   public List<TestPerson> search(TestPerson testPerson) throws JMeterException {
-    String nameRegex =
-        (testPerson.getName() != null) ? testPerson.getName().replaceAll("\\*", "") : null;
-    String lastnameRegex =
-        (testPerson.getLastname() != null) ? testPerson.getLastname().replaceAll("\\*", "") : null;
+
+    String nameRegex = (testPerson.getName() != null) ? testPerson.getName().replaceAll("\\*", "") : null;
+    String lastnameRegex = (testPerson.getLastname() != null) ? testPerson.getLastname().replaceAll("\\*", "") : null;
 
     Set<TestPerson> testPersonList = new HashSet<>();
 
     switch (getSearchType(testPerson)) {
       case BY_ID -> testPersonList.add(testPersonRepository.findById(testPerson.getId()));
-      case BY_NAME ->
-          testPersonList.addAll(testPersonRepository.findAllByNameStartingWith(nameRegex));
-      case BY_LASTNAME ->
-          testPersonList.addAll(testPersonRepository.findAllByLastnameStartingWith(lastnameRegex));
-      case BY_NAME_AND_LASTNAME -> testPersonList.addAll(
-          testPersonRepository.findAllByNameStartingWithAndLastnameStartingWith(nameRegex,
-              lastnameRegex));
+      case BY_NAME -> testPersonList.addAll(testPersonRepository.findAllByNameStartingWith(nameRegex));
+      case BY_LASTNAME -> testPersonList.addAll(testPersonRepository.findAllByLastnameStartingWith(lastnameRegex));
+      case BY_NAME_AND_LASTNAME -> testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndLastnameStartingWith(nameRegex, lastnameRegex));
       case BY_DATE -> {
-        testPersonList.addAll(testPersonRepository.findAllByBirthNumberStartingWith(
-            dateCorrection(testPerson.getBirthNumber(), false)));
-        testPersonList.addAll(testPersonRepository.findAllByBirthNumberStartingWith(
-            dateCorrection(testPerson.getBirthNumber(), true)));
+        testPersonList.addAll(testPersonRepository.findAllByBirthNumberStartingWith(dateCorrection(testPerson.getBirthNumber(), false)));
+        testPersonList.addAll(testPersonRepository.findAllByBirthNumberStartingWith(dateCorrection(testPerson.getBirthNumber(), true)));
       }
       case BY_NAME_AND_DATE -> {
-        testPersonList.addAll(
-            testPersonRepository.findAllByNameStartingWithAndBirthNumberStartingWith(nameRegex,
-                dateCorrection(testPerson.getBirthNumber(), false)));
-        testPersonList.addAll(
-            testPersonRepository.findAllByNameStartingWithAndBirthNumberStartingWith(nameRegex,
-                dateCorrection(testPerson.getBirthNumber(), true)));
+        testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndBirthNumberStartingWith(nameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
+        testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndBirthNumberStartingWith(nameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
       }
       case BY_LASTNAME_AND_DATE -> {
-        testPersonList.addAll(
-            testPersonRepository.findAllByLastnameStartingWithAndBirthNumberStartingWith(
-                lastnameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
-        testPersonList.addAll(
-            testPersonRepository.findAllByLastnameStartingWithAndBirthNumberStartingWith(
-                lastnameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
+        testPersonList.addAll(testPersonRepository.findAllByLastnameStartingWithAndBirthNumberStartingWith(lastnameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
+        testPersonList.addAll(testPersonRepository.findAllByLastnameStartingWithAndBirthNumberStartingWith(lastnameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
       }
       case BY_NAME_AND_LASTNAME_AND_DATE -> {
-        testPersonList.addAll(
-            testPersonRepository.findAllByNameStartingWithAndLastnameStartingWithAndBirthNumberStartingWith(
-                nameRegex, lastnameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
-        testPersonList.addAll(
-            testPersonRepository.findAllByNameStartingWithAndLastnameStartingWithAndBirthNumberStartingWith(
-                nameRegex, lastnameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
+        testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndLastnameStartingWithAndBirthNumberStartingWith(nameRegex, lastnameRegex, dateCorrection(testPerson.getBirthNumber(), false)));
+        testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndLastnameStartingWithAndBirthNumberStartingWith(nameRegex, lastnameRegex, dateCorrection(testPerson.getBirthNumber(), true)));
       }
       case null -> testPersonList.add(null);
     }
@@ -90,22 +71,19 @@ public class TestPersonServiceImpl implements TestPersonService {
     List<TestPerson> personList = new ArrayList<>(testPersonList);
 
     for (TestPerson person : personList) {
-      if (invalidBirthNumber(person.getBirthNumber(), person.getGender())) {
-        throw new BirthNumberException();
-      }
+      invalidBirthNumber(person.getBirthNumber(), testPerson.getGender());
     }
 
     return personList;
   }
 
   @Override
-  public TestPerson update(Long id, TestPerson testPerson) throws JMeterException {
+  public TestPerson update(Long id,
+                           TestPerson testPerson) throws JMeterException {
     TestPerson updatingPerson = testPersonRepository.findById(id);
     String birthNumber = updatingPerson.getBirthNumber();
 
-    if (invalidBirthNumber(birthNumber, updatingPerson.getGender())) {
-      throw new BirthNumberException("Birth number is invalid!");
-    }
+    invalidBirthNumber(birthNumber, testPerson.getGender());
 
     if (testPerson.getName() != null && testPerson.getLastname() == null) {
       updatingPerson.setName(testPerson.getName());
@@ -122,7 +100,10 @@ public class TestPersonServiceImpl implements TestPersonService {
   }
 
   @Override
-  public void create(String name, String lastname, String birthNumber, Gender gender)
+  public void create(String name,
+                     String lastname,
+                     String birthNumber,
+                     Gender gender)
       throws JMeterException {
     TestPerson testPerson = new TestPerson(name, lastname, birthNumber, gender);
     if (testPersonRepository.exists(Example.of(testPerson))) {
@@ -131,33 +112,65 @@ public class TestPersonServiceImpl implements TestPersonService {
     testPersonRepository.save(testPerson);
   }
 
-  private boolean invalidBirthNumber(String birthNumber, Gender gender) throws JMeterException {
+  private void invalidBirthNumber(String birthNumber,
+                                  Gender gender) throws JMeterException {
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMdd");
+    dateFormat.setLenient(false);
 
-    if (birthNumber.matches("\\d{6}/\\d{3,4}")) {
-      int day = Integer.parseInt(birthNumber.substring(4, 6));
-      int month = Integer.parseInt(birthNumber.substring(2, 4));
-      int year = Integer.parseInt(birthNumber.substring(0, 2));
+    Long birthNumberWithoutSlash = Long.parseLong(birthNumber.replaceAll("/", ""));
 
-      if (gender == Gender.FEMALE) {
-        month = Integer.parseInt(birthNumber.substring(2, 4));
-        month -= 50;
-      }
+    int day = Integer.parseInt(birthNumber.substring(4, 6));
+    int month = Integer.parseInt(birthNumber.substring(2, 4));
+    int year = Integer.parseInt(birthNumber.substring(0, 2));
 
-      SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMdd");
-      dateFormat.setLenient(false);
-
-      try {
-        dateFormat.parse(String.format("%02d%02d%02d", year, month, day));
-      } catch (ParseException e) {
-        throw new JMeterException(e.getMessage());
-      }
-    } else {
-      return true;
+    if (gender == Gender.FEMALE) {
+      month -= 50;
     }
-    return false;
+
+
+    if (birthNumber.length() == 10) {
+      parseOldBirthNumber(day, month, year, dateFormat);
+    } else {
+      parseNewBirthNumber(day, month, year, dateFormat, birthNumberWithoutSlash);
+    }
   }
 
-  private String dateCorrection(String birthNumber, boolean isFemale) {
+  private void parseOldBirthNumber(int day,
+                                   int month,
+                                   int year,
+                                   SimpleDateFormat format) throws JMeterException {
+
+    if (year > 53) throw new BirthNumberException("Incorrect year of birth!");
+
+
+    try {
+      format.parse(String.format("%02d%02d%02d", year, month, day));
+    } catch (ParseException e) {
+      throw new BirthNumberException();
+    }
+  }
+
+  private void parseNewBirthNumber(int day,
+                                   int month,
+                                   int year,
+                                   SimpleDateFormat format,
+                                   Long birthNumber) throws JMeterException {
+
+//    if (year < 54) throw new BirthNumberException("Incorrect year of birth!");
+
+    if (birthNumber % 11 != 0) throw new BirthNumberException("Birth number is incorrect! Not dividable with 11!");
+
+    try {
+      format.parse(String.format("%02d%02d%02d", year, month, day));
+    } catch (ParseException e) {
+      throw new BirthNumberException(e.getMessage());
+    }
+  }
+
+
+  private String dateCorrection(String birthNumber,
+                                boolean isFemale) {
+
     String searchedDate = (birthNumber != null) ? birthNumber.replaceAll("-", "") : null;
     String cleanDate = null;
     int date;
@@ -210,6 +223,7 @@ public class TestPersonServiceImpl implements TestPersonService {
     } else if (testPerson.getName() != null) {
       return SearchType.BY_NAME_AND_LASTNAME_AND_DATE;
     }
+
     return null;
   }
 }
