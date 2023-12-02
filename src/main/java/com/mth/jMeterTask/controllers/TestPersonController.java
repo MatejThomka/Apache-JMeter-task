@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/person")
+@RequestMapping("/api/v1/test_person")
 @RequiredArgsConstructor
 public class TestPersonController {
 
@@ -34,8 +34,8 @@ public class TestPersonController {
   }
 
   @PatchMapping("{id}/update")
-  ResponseEntity<TestPerson> update(@PathVariable Long id, @RequestBody TestPerson testPerson)
-      throws JMeterException {
+  ResponseEntity<TestPerson> update(@PathVariable Long id,
+                                    @RequestBody TestPerson testPerson) throws JMeterException {
     return ResponseEntity.ok().body(testPersonService.update(id, testPerson));
   }
 }
