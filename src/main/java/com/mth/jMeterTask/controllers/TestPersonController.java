@@ -1,10 +1,15 @@
 package com.mth.jMeterTask.controllers;
 
+import com.mth.jMeterTask.entities.records.TestPersonRecord;
 import com.mth.jMeterTask.exceptions.JMeterException;
 import com.mth.jMeterTask.entities.TestPerson;
+import com.mth.jMeterTask.exceptions.TestPersonNotFoundException;
 import com.mth.jMeterTask.services.TestPersonService;
 import java.util.List;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,24 +23,49 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/test_person")
 @RequiredArgsConstructor
+@Slf4j
 public class TestPersonController {
 
   private final TestPersonService testPersonService;
 
   @GetMapping("/detail")
-  ResponseEntity<TestPerson> detail(@RequestParam Long id) throws JMeterException {
-    return ResponseEntity.ok().body(testPersonService.detail(id));
+  ResponseEntity<?> detail(@RequestParam @NonNull Integer id) throws JMeterException {
+    TestPersonRecord testPersonRecord;
+
+    try {
+      testPersonRecord = testPersonService.detail(id);
+    } catch (TestPersonNotFoundException e) {
+      log.error(e.getMessage());
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    return new ResponseEntity<>(testPersonRecord, HttpStatus.OK);
   }
 
   @PostMapping("/search")
-  ResponseEntity<List<TestPerson>> search(@RequestBody TestPerson testPerson)
+  ResponseEntity<?> search(@RequestBody TestPerson testPerson)
       throws JMeterException {
-    return ResponseEntity.ok().body(testPersonService.search(testPerson));
+    List<TestPersonRecord> testPersonRecord;
+
+    try {
+      testPersonRecord = testPersonService.search(testPerson);
+    } catch (TestPersonNotFoundException e) {
+      log.error(e.getMessage());
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    return new ResponseEntity<>(testPersonRecord, HttpStatus.OK);
   }
 
   @PatchMapping("{id}/update")
-  ResponseEntity<TestPerson> update(@PathVariable Long id,
+  ResponseEntity<?> update(@PathVariable @NonNull Integer id,
                                     @RequestBody TestPerson testPerson) throws JMeterException {
-    return ResponseEntity.ok().body(testPersonService.update(id, testPerson));
+    TestPersonRecord testPersonRecord;
+
+    try {
+      testPersonRecord = testPersonService.update(id, testPerson);
+    } catch (TestPersonNotFoundException e) {
+      log.error(e.getMessage());
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    return new ResponseEntity<>(testPersonRecord, HttpStatus.OK);
   }
 }
