@@ -156,8 +156,6 @@ public class TestPersonServiceImpl implements TestPersonService {
                                    SimpleDateFormat format,
                                    Long birthNumber) throws JMeterException {
 
-//    if (year < 54) throw new BirthNumberException("Incorrect year of birth!");
-
     if (birthNumber % 11 != 0) throw new BirthNumberException("Birth number is incorrect! Not dividable with 11!");
 
     try {
