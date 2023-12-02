@@ -1,10 +1,12 @@
 package com.mth.jMeterTask.services;
 
+import com.mth.jMeterTask.entities.records.TestPersonRecord;
 import com.mth.jMeterTask.entities.enums.SearchType;
 import com.mth.jMeterTask.exceptions.BirthNumberException;
 import com.mth.jMeterTask.exceptions.JMeterException;
 import com.mth.jMeterTask.entities.TestPerson;
 import com.mth.jMeterTask.entities.enums.Gender;
+import com.mth.jMeterTask.exceptions.TestPersonNotFoundException;
 import com.mth.jMeterTask.repositories.TestPersonRepository;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,9 +14,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,19 +27,19 @@ public class TestPersonServiceImpl implements TestPersonService {
   private final TestPersonRepository testPersonRepository;
 
   @Override
-  public TestPerson detail(Long id) throws JMeterException {
+  public TestPersonRecord detail(@NonNull Integer id) throws JMeterException {
 
-    TestPerson testPerson = testPersonRepository.findById(id);
+    log.info("Getting detail from ID: " + id);
 
-    String birthNumber = testPerson.getBirthNumber();
+    TestPerson testPerson = testPersonRepository.findById(id).orElseThrow(() -> new TestPersonNotFoundException(id + " not found!"));
 
-    invalidBirthNumber(birthNumber, testPerson.getGender());
+    invalidBirthNumber(testPerson.getBirthNumber(), testPerson.getGender());
 
-    return testPerson;
+    return new TestPersonRecord(testPerson.getName(), testPerson.getLastname(), testPerson.getBirthNumber());
   }
 
   @Override
-  public List<TestPerson> search(TestPerson testPerson) throws JMeterException {
+  public List<TestPersonRecord> search(TestPerson testPerson) throws JMeterException {
 
     String nameRegex = (testPerson.getName() != null) ? testPerson.getName().replaceAll("\\*", "") : null;
     String lastnameRegex = (testPerson.getLastname() != null) ? testPerson.getLastname().replaceAll("\\*", "") : null;
@@ -45,7 +47,7 @@ public class TestPersonServiceImpl implements TestPersonService {
     Set<TestPerson> testPersonList = new HashSet<>();
 
     switch (getSearchType(testPerson)) {
-      case BY_ID -> testPersonList.add(testPersonRepository.findById(testPerson.getId()));
+      case BY_ID -> testPersonList.add(testPersonRepository.findById(testPerson.getId()).orElseThrow(() -> new TestPersonNotFoundException(testPerson.getId() + "not found!")));
       case BY_NAME -> testPersonList.addAll(testPersonRepository.findAllByNameStartingWith(nameRegex));
       case BY_LASTNAME -> testPersonList.addAll(testPersonRepository.findAllByLastnameStartingWith(lastnameRegex));
       case BY_NAME_AND_LASTNAME -> testPersonList.addAll(testPersonRepository.findAllByNameStartingWithAndLastnameStartingWith(nameRegex, lastnameRegex));
@@ -69,21 +71,25 @@ public class TestPersonServiceImpl implements TestPersonService {
     }
 
     List<TestPerson> personList = new ArrayList<>(testPersonList);
+    List<TestPersonRecord> outputList = new ArrayList<>();
+
 
     for (TestPerson person : personList) {
       invalidBirthNumber(person.getBirthNumber(), testPerson.getGender());
+      outputList.add(new TestPersonRecord(person.getName(), person.getLastname(), person.getBirthNumber()));
     }
 
-    return personList;
+    return outputList;
   }
 
   @Override
-  public TestPerson update(Long id,
+  public TestPersonRecord update(@NonNull Integer id,
                            TestPerson testPerson) throws JMeterException {
-    TestPerson updatingPerson = testPersonRepository.findById(id);
-    String birthNumber = updatingPerson.getBirthNumber();
 
-    invalidBirthNumber(birthNumber, testPerson.getGender());
+    TestPerson updatingPerson = testPersonRepository.findById(id).orElseThrow(() -> new TestPersonNotFoundException(id + " not found!"));
+
+
+    invalidBirthNumber(updatingPerson.getBirthNumber(), testPerson.getGender());
 
     if (testPerson.getName() != null && testPerson.getLastname() == null) {
       updatingPerson.setName(testPerson.getName());
@@ -96,20 +102,7 @@ public class TestPersonServiceImpl implements TestPersonService {
 
     testPersonRepository.save(updatingPerson);
 
-    return updatingPerson;
-  }
-
-  @Override
-  public void create(String name,
-                     String lastname,
-                     String birthNumber,
-                     Gender gender)
-      throws JMeterException {
-    TestPerson testPerson = new TestPerson(name, lastname, birthNumber, gender);
-    if (testPersonRepository.exists(Example.of(testPerson))) {
-      throw new JMeterException("This user already exist!");
-    }
-    testPersonRepository.save(testPerson);
+    return new TestPersonRecord(updatingPerson.getName(), updatingPerson.getLastname(), updatingPerson.getBirthNumber());
   }
 
   private void invalidBirthNumber(String birthNumber,
@@ -146,7 +139,7 @@ public class TestPersonServiceImpl implements TestPersonService {
     try {
       format.parse(String.format("%02d%02d%02d", year, month, day));
     } catch (ParseException e) {
-      throw new BirthNumberException();
+      throw new BirthNumberException("Incorrect birth number!");
     }
   }
 
