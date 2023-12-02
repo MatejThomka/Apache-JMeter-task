@@ -58,6 +58,12 @@ public class TestPersonController {
   @PatchMapping("{id}/update")
   ResponseEntity<?> update(@PathVariable @NonNull Integer id,
                                     @RequestBody TestPerson testPerson) throws JMeterException {
+
+    if (testPerson.getName() == null && testPerson.getLastname() == null) {
+      log.warn("Provide minimum one parameter!");
+      return new ResponseEntity<>("Provide minimum one parameter!", HttpStatus.NOT_ACCEPTABLE);
+    }
+
     TestPersonRecord testPersonRecord;
 
     try {
