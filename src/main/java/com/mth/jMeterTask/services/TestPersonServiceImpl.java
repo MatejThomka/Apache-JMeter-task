@@ -114,7 +114,7 @@ public class TestPersonServiceImpl implements TestPersonService {
 
     TestPerson updatingPerson = testPersonRepository.findById(id).orElseThrow(() -> new TestPersonNotFoundException(id + " not found!"));
 
-    invalidBirthNumber(updatingPerson.getBirthNumber(), testPerson.getGender());
+    invalidBirthNumber(updatingPerson.getBirthNumber(), updatingPerson.getGender());
 
     if (testPerson.getName() != null && testPerson.getLastname() == null) {
       updatingPerson.setName(testPerson.getName());
@@ -186,6 +186,7 @@ public class TestPersonServiceImpl implements TestPersonService {
                                    int year,
                                    SimpleDateFormat format,
                                    Long birthNumber) throws JMeterException {
+    log.info(String.valueOf(month));
     log.info("Validate new version of birth number after 1954");
 
     if (birthNumber % 11 != 0) throw new BirthNumberException("Birth number is incorrect! Not dividable with 11!");
