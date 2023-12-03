@@ -42,7 +42,7 @@ public class TestPersonServiceImpl implements TestPersonService {
 
     invalidBirthNumber(testPerson.getBirthNumber(), testPerson.getGender());
 
-    return new TestPersonRecord(testPerson.getName(), testPerson.getLastname(), testPerson.getBirthNumber());
+    return new TestPersonRecord(testPerson.getId(), testPerson.getName(), testPerson.getLastname(), testPerson.getBirthNumber());
   }
 
   /**
@@ -92,7 +92,7 @@ public class TestPersonServiceImpl implements TestPersonService {
 
     for (TestPerson person : personList) {
       invalidBirthNumber(person.getBirthNumber(), person.getGender());
-      outputList.add(new TestPersonRecord(person.getName(), person.getLastname(), person.getBirthNumber()));
+      outputList.add(new TestPersonRecord(person.getId(), person.getName(), person.getLastname(), person.getBirthNumber()));
     }
 
     return outputList;
@@ -127,7 +127,7 @@ public class TestPersonServiceImpl implements TestPersonService {
 
     testPersonRepository.save(updatingPerson);
 
-    return new TestPersonRecord(updatingPerson.getName(), updatingPerson.getLastname(), updatingPerson.getBirthNumber());
+    return new TestPersonRecord(updatingPerson.getId(), updatingPerson.getName(), updatingPerson.getLastname(), updatingPerson.getBirthNumber());
   }
 
   /**
