@@ -10,13 +10,13 @@ jobs:
           name: "Compile project"
           command: "mvn compile"
 
-  test-compilability:
+  test-compatibility:
     docker:
       - image: maven:3.8.4
     steps:
       - checkout
       - run:
-          name: "Check test compilability"
+          name: "Check test compatibility"
           command: "mvn test-compile"
 
   tests:
@@ -50,7 +50,7 @@ workflows:
   before-merge-workflow:
     jobs:
       - compile-project
-      - test-compilability
+      - test-compatibility
       - tests
       - code-quality
       - code-smells
