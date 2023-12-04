@@ -52,4 +52,4 @@ Endpoint bude podporovat 3 rozhrania
 
 2.3) otestovat userov (pomocou 1.1), ktori boli aktualizovani pomocou volania z 2.2) a v pripade, ze sa ich detaily nezmenili, pomocou Assert reportovat problem s updatom
 
-!!Complete!!
+!!Complete!
