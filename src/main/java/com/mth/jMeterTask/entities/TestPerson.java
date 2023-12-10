@@ -28,12 +28,14 @@ public class TestPerson {
   String name;
   String lastname;
   String birthNumber;
+  String dateOfBirth;
   Gender gender;
 
-  public TestPerson(String name, String lastname, String birthNumber, Gender gender) {
+  public TestPerson(String name, String lastname, String birthNumber, Gender gender, String dateOfBirth) {
     this.setName(name);
     this.setLastname(lastname);
     this.setBirthNumber(birthNumber);
+    this.setDateOfBirth(dateOfBirth);
     this.setGender(gender);
   }
 }
