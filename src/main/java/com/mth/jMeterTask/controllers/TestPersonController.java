@@ -1,7 +1,6 @@
 package com.mth.jMeterTask.controllers;
 
 import com.mth.jMeterTask.entities.records.TestPersonRecord;
-import com.mth.jMeterTask.exceptions.JMeterException;
 import com.mth.jMeterTask.entities.TestPerson;
 import com.mth.jMeterTask.exceptions.TestPersonNotFoundException;
 import com.mth.jMeterTask.services.TestPersonService;
@@ -29,7 +28,7 @@ public class TestPersonController {
   private final TestPersonService testPersonService;
 
   @GetMapping("/detail")
-  ResponseEntity<?> detail(@RequestParam @NonNull Integer id) throws JMeterException {
+  ResponseEntity<?> detail(@RequestParam @NonNull Integer id) {
     TestPersonRecord testPersonRecord;
 
     try {
@@ -42,8 +41,7 @@ public class TestPersonController {
   }
 
   @PostMapping("/search")
-  ResponseEntity<?> search(@RequestBody TestPerson testPerson)
-      throws JMeterException {
+  ResponseEntity<?> search(@RequestBody TestPerson testPerson) {
     List<TestPersonRecord> testPersonRecord;
 
     try {
@@ -57,7 +55,7 @@ public class TestPersonController {
 
   @PatchMapping("{id}/update")
   ResponseEntity<?> update(@PathVariable @NonNull Integer id,
-                                    @RequestBody TestPerson testPerson) throws JMeterException {
+                                    @RequestBody TestPerson testPerson) {
 
     if (testPerson.getName() == null && testPerson.getLastname() == null) {
       log.warn("Provide minimum one parameter!");
