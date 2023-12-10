@@ -5,5 +5,6 @@ CREATE TABLE test_person (
                             name VARCHAR(255),
                             lastname VARCHAR(255),
                             birth_number VARCHAR(255),
+                            date_of_birth DATE,
                             gender TINYINT
 );
