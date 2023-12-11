@@ -56,17 +56,19 @@ public class TestPersonService {
 
     Specification<TestPerson> spec = Specification.where(null);
 
-    if (testPerson.getName() != null) spec.and(TestPersonSpecifications.searchByName(testPerson.getName()));
-    if (testPerson.getLastname() != null) spec.and(TestPersonSpecifications.searchByLastname(testPerson.getLastname()));
-    if (testPerson.getDateOfBirth() != null) spec.and(TestPersonSpecifications.searchByDateOfBirth(testPerson.getDateOfBirth()));
+    if (testPerson.getId() != null) {
+      spec = spec.and(TestPersonSpecifications.hasId(testPerson.getId()));
+    } else {
+      if (testPerson.getName() != null) spec = spec.and(TestPersonSpecifications.searchByName(testPerson.getName()));
+      if (testPerson.getLastname() != null) spec = spec.and(TestPersonSpecifications.searchByLastname(testPerson.getLastname()));
+      if (testPerson.getDateOfBirth() != null) spec = spec.and(TestPersonSpecifications.searchByDateOfBirth(testPerson.getDateOfBirth()));
+    }
 
-    log.info(spec.toString());
-
-    Set<TestPerson> listOfTestPerson = testPersonRepository.findAll(spec);
+    Set<TestPerson> persons = testPersonRepository.findAll(spec);
 
     List<TestPersonRecord> outputList = new ArrayList<>();
 
-    for (TestPerson person : listOfTestPerson) {
+    for (TestPerson person : persons) {
       outputList.add(new TestPersonRecord(person.getId(), person.getName(), person.getLastname(), person.getBirthNumber()));
     }
 
