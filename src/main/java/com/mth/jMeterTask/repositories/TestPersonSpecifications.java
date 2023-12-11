@@ -3,27 +3,21 @@ package com.mth.jMeterTask.repositories;
 import com.mth.jMeterTask.entities.TestPerson;
 import java.time.LocalDate;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Component;
 
-@Component
 public class TestPersonSpecifications {
 
   public static Specification<TestPerson> hasId(Integer id){
     return ((root, query, builder) -> builder.equal(root.get("id"), id));
   }
-
   public static Specification<TestPerson> hasName(String name) {
     return ((root, query, builder) -> builder.equal(root.get("name"), name));
   }
-
   public static Specification<TestPerson> hasNamePrefix(String namePrefix) {
     return ((root, query, builder) -> builder.like(root.get("name"), namePrefix + "%"));
   }
-
   public static Specification<TestPerson> hasNameSuffix(String nameSuffix) {
     return ((root, query, builder) -> builder.like(root.get("name"), "%" + nameSuffix + "%"));
   }
-
   public static Specification<TestPerson> searchByName(String name) {
     if (name.startsWith("*") && name.endsWith("*")) {
       return hasNameSuffix(name.replace("*", ""))
@@ -37,19 +31,15 @@ public class TestPersonSpecifications {
       return hasName(name);
     }
   }
-
   public static Specification<TestPerson> hasLastname(String lastname) {
     return ((root, query, builder) -> builder.equal(root.get("lastname"), lastname));
   }
-
   public static Specification<TestPerson> hasLastnamePrefix(String lastnamePrefix) {
     return ((root, query, builder) -> builder.like(root.get("lastname"), lastnamePrefix + "%"));
   }
-
   public static Specification<TestPerson> hasLastnameSuffix(String lastnameSuffix) {
     return ((root, query, builder) -> builder.like(root.get("lastname"), "%" + lastnameSuffix + "%"));
   }
-
   public static Specification<TestPerson> searchByLastname(String lastname) {
     if (lastname.startsWith("*") && lastname.endsWith("*")) {
       return hasLastnameSuffix(lastname.replace("*", ""))
@@ -63,7 +53,6 @@ public class TestPersonSpecifications {
       return hasLastname(lastname);
     }
   }
-
   public static Specification<TestPerson> hasYear(int year) {
     return ((root, query, builder) -> {
       LocalDate startDate = LocalDate.of(year, 1, 1);
@@ -71,7 +60,6 @@ public class TestPersonSpecifications {
       return builder.between(root.get("dateOfBirth").as(String.class), startDate.toString(), endDate.toString());
     });
   }
-
   public static Specification<TestPerson> hasYearAndMonth(int year,
                                                           int month) {
     return ((root, query, builder) -> {
@@ -80,7 +68,6 @@ public class TestPersonSpecifications {
       return builder.between(root.get("dateOfBirth").as(String.class), startDate.toString(), endDate.toString());
     });
   }
-
   public static Specification<TestPerson> hasFullDateOfBirth(int year,
                                                              int month,
                                                              int day) {
@@ -89,7 +76,6 @@ public class TestPersonSpecifications {
       return builder.equal(root.get("dateOfBirth").as(String.class), date.toString());
     });
   }
-
   public static Specification<TestPerson> searchByDateOfBirth(String dateOfBirth) {
     if (dateOfBirth.matches("\\d{4}-\\d{2}-\\d{2}")) {
       return hasFullDateOfBirth(Integer.parseInt(dateOfBirth.substring(0, 4)), Integer.parseInt(dateOfBirth.substring(5, 7)), Integer.parseInt(dateOfBirth.substring(8, 10)));
