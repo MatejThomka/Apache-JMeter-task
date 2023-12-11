@@ -99,4 +99,8 @@ public class TestPersonSpecifications {
       throw new IllegalArgumentException("Wrong date format!" + dateOfBirth);
     }
   }
+
+  public static Specification<TestPerson> hasBirthNumber(String birthNumber) {
+    return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("birthNumber"), birthNumber);
+  }
 }
