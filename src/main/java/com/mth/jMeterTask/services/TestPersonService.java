@@ -94,6 +94,10 @@ public class TestPersonService {
 
     Set<TestPerson> persons = testPersonRepository.findAll(spec);
 
+    if (persons.isEmpty()) {
+      throw new TestPersonNotFoundException("There is nothing!");
+    }
+
     List<TestPersonRecord> outputList = new ArrayList<>();
 
     for (TestPerson person : persons) {
