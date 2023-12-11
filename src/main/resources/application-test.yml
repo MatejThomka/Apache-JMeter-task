@@ -30,3 +30,7 @@ spring:
     user: root
     password: Matej20121994
     locations: classpath:db.migration
+  jpa:
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.MySQLDialect

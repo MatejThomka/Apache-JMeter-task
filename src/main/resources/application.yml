@@ -30,6 +30,11 @@ spring:
     user: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     locations: classpath:db.migration
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
 
 #  ## JPA / HIBERNATE ##
 #  jpa:
