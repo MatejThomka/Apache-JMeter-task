@@ -30,6 +30,11 @@ jobs:
           command: mvn test
 
 
+      - run:
+          name: Run code quality checks
+          command: mvn clean verify
+
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
