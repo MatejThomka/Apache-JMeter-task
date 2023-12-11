@@ -2,6 +2,7 @@ package com.mth.jMeterTask.controllers;
 
 import com.mth.jMeterTask.entities.records.TestPersonRecord;
 import com.mth.jMeterTask.entities.TestPerson;
+import com.mth.jMeterTask.exceptions.BirthNumberException;
 import com.mth.jMeterTask.exceptions.JMeterException;
 import com.mth.jMeterTask.exceptions.TestPersonNotFoundException;
 import com.mth.jMeterTask.services.TestPersonService;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -93,5 +95,23 @@ public class TestPersonController {
       return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
     return new ResponseEntity<>(testPersonRecord, HttpStatus.OK);
+  }
+
+  @DeleteMapping("{id}/delete")
+  ResponseEntity<?> delete(@PathVariable @NonNull Integer id,
+                           @RequestBody TestPerson testPerson) {
+    TestPerson removingPerson;
+
+    try {
+      removingPerson = testPersonService.delete(id, testPerson);
+    } catch (TestPersonNotFoundException e) {
+      log.error(e.getMessage());
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    } catch (BirthNumberException e) {
+      log.error(e.getMessage());
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    return new ResponseEntity<>(removingPerson.getId() + " deleted successfully!" , HttpStatus.OK);
   }
 }
