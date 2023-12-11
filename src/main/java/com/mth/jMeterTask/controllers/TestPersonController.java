@@ -2,6 +2,7 @@ package com.mth.jMeterTask.controllers;
 
 import com.mth.jMeterTask.entities.records.TestPersonRecord;
 import com.mth.jMeterTask.entities.TestPerson;
+import com.mth.jMeterTask.exceptions.JMeterException;
 import com.mth.jMeterTask.exceptions.TestPersonNotFoundException;
 import com.mth.jMeterTask.services.TestPersonService;
 import java.util.List;
@@ -26,6 +27,26 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestPersonController {
 
   private final TestPersonService testPersonService;
+
+  @PostMapping("/create")
+  ResponseEntity<?> create(@RequestBody TestPerson testPerson) {
+
+    if (testPerson.getName() == null || testPerson.getLastname() == null || testPerson.getBirthNumber() == null || testPerson.getGender() == null) {
+      log.warn("Minimum one parameter is missing! Please add all parameter!");
+      return new ResponseEntity<>("Minimum one parameter is missing", HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    TestPersonRecord testPersonRecord;
+
+    try {
+      testPersonRecord = testPersonService.create(testPerson);
+    } catch (JMeterException e) {
+      log.error(e.getMessage());
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    return new ResponseEntity<>(testPersonRecord, HttpStatus.OK);
+  }
 
   @GetMapping("/detail")
   ResponseEntity<?> detail(@RequestParam @NonNull Integer id) {
