@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -134,6 +135,22 @@ public class TestPersonService {
     testPersonRepository.save(updatingPerson);
 
     return new TestPersonRecord(updatingPerson.getId(), updatingPerson.getName(), updatingPerson.getLastname(), updatingPerson.getBirthNumber());
+  }
+
+  public TestPerson delete(Integer id,
+                           TestPerson testPerson) throws BirthNumberException {
+
+    log.info("Deleting id " + id + "!");
+
+    TestPerson removingPerson = testPersonRepository.findById(id).orElseThrow(() -> new TestPersonNotFoundException(id + " not found!"));
+
+    if (Objects.equals(testPerson.getBirthNumber(), removingPerson.getBirthNumber())) {
+      testPersonRepository.delete(removingPerson);
+    } else {
+      throw new BirthNumberException("Birth number is not correct!");
+    }
+
+    return removingPerson;
   }
 
   /**
