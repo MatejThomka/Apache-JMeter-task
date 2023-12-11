@@ -28,6 +28,32 @@ public class TestPersonService {
 
   private final TestPersonRepository testPersonRepository;
 
+  public TestPersonRecord create(TestPerson testPerson) throws JMeterException {
+
+    log.info("Creating new TestPerson");
+
+    Specification<TestPerson> spec = Specification.where(null);
+
+    checkBirthNumber(testPerson.getBirthNumber(), testPerson.getGender());
+
+    if (testPerson.getName() != null) spec = spec.and(TestPersonSpecifications.hasName(testPerson.getName()));
+    if (testPerson.getLastname() != null) spec = spec.and(TestPersonSpecifications.hasLastname(testPerson.getLastname()));
+    if (testPerson.getBirthNumber() != null) spec = spec.and(TestPersonSpecifications.hasBirthNumber(testPerson.getBirthNumber()));
+
+    if (!testPersonRepository.findAll(spec).isEmpty()) throw new TestPersonAlreadyExistException("This person already exist! " + testPerson.getName() + " " + testPerson.getLastname() + " " + testPerson.getBirthNumber());
+
+    TestPerson newPerson = new TestPerson();
+    newPerson.setName(testPerson.getName());
+    newPerson.setLastname(testPerson.getLastname());
+    newPerson.setBirthNumber(testPerson.getBirthNumber());
+    newPerson.setDateOfBirth(extractDateOfBirth(testPerson.getBirthNumber(), testPerson.getGender()));
+    newPerson.setGender(testPerson.getGender());
+
+    testPersonRepository.save(newPerson);
+
+    return new TestPersonRecord(newPerson.getId(), newPerson.getName(), newPerson.getLastname(), newPerson.getBirthNumber());
+  }
+
   /**
    * Retrieves details about a person based on the provided ID.
    *
