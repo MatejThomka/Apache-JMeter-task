@@ -51,6 +51,7 @@ jobs:
           destination: pmd-artifacts
 
 workflows:
+    sample:
     jobs:
       - compile-project
       - test-compatibility
