@@ -112,6 +112,6 @@ public class TestPersonController {
       return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    return new ResponseEntity<>(removingPerson.getId() + " deleted successfully!" , HttpStatus.OK);
+    return new ResponseEntity<>("TestPerson under ID: " + removingPerson.getId() + " deleted successfully!" , HttpStatus.OK);
   }
 }
