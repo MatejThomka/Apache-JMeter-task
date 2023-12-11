@@ -29,6 +29,14 @@ public class TestPersonService {
 
   private final TestPersonRepository testPersonRepository;
 
+  /**
+   * Creates a new TestPersonRecord based on the provided TestPerson.
+   *
+   * @param testPerson - The TestPerson object containing information for creating the record.
+   * @return - A TestPersonRecord representing the newly created record.
+   * @throws JMeterException - If there is an issue related to JMeter.
+   * @throws TestPersonAlreadyExistException - If a TestPerson with the same details already exists.
+   */
   public TestPersonRecord create(TestPerson testPerson) throws JMeterException {
 
     log.info("Creating new TestPerson");
@@ -137,6 +145,15 @@ public class TestPersonService {
     return new TestPersonRecord(updatingPerson.getId(), updatingPerson.getName(), updatingPerson.getLastname(), updatingPerson.getBirthNumber());
   }
 
+  /**
+   * Deletes a TestPerson with the specified ID if the provided birth number matches.
+   *
+   * @param id - The ID of the TestPerson to be deleted.
+   * @param testPerson - The TestPerson object containing the birth number for validation.
+   * @return - The deleted TestPerson.
+   * @throws BirthNumberException - If there is an issue related to the birth number.
+   * @throws TestPersonNotFoundException - If the TestPerson with the specified ID is not found.
+   */
   public TestPerson delete(Integer id,
                            TestPerson testPerson) throws BirthNumberException {
 
@@ -218,6 +235,13 @@ public class TestPersonService {
     }
   }
 
+  /**
+   * Extracts the date of birth from a given birth number, considering the gender.
+   *
+   * @param birthNumber - The birth number from which to extract the date of birth.
+   * @param gender - The gender associated with the birth number.
+   * @return - A formatted string representing the date of birth (yyyy-MM-dd).
+   */
   private String extractDateOfBirth(String birthNumber, Gender gender) {
 
     int month = Integer.parseInt(birthNumber.substring(2, 4));
