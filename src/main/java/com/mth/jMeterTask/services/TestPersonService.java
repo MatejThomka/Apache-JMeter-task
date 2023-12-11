@@ -200,5 +200,29 @@ public class TestPersonService {
       throw new BirthNumberException(e.getMessage());
     }
   }
+
+  private String extractDateOfBirth(String birthNumber, Gender gender) {
+
+    int month = Integer.parseInt(birthNumber.substring(2, 4));
+
+    StringBuilder stringBuilder = new StringBuilder();
+    int currentYear = Calendar.YEAR % 100;
+
+    if (gender == Gender.FEMALE) {
+      month -= 50;
+    }
+
+
+
+    if (Integer.parseInt(birthNumber.substring(0, 2)) > currentYear) {
+      stringBuilder.append("19").append(birthNumber, 0, 2).append("-")
+          .append(month).append("-").append(birthNumber, 4, 6);
+    } else {
+      stringBuilder.append("20").append(birthNumber, 0, 2).append("-")
+          .append(month).append("-").append(birthNumber, 4, 6);
+    }
+
+    return stringBuilder.toString();
+  }
 }
 
