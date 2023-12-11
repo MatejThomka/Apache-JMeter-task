@@ -31,11 +31,10 @@ public class TestPerson {
   String dateOfBirth;
   Gender gender;
 
-  public TestPerson(String name, String lastname, String birthNumber, Gender gender, String dateOfBirth) {
+  public TestPerson(String name, String lastname, String birthNumber, Gender gender) {
     this.setName(name);
     this.setLastname(lastname);
     this.setBirthNumber(birthNumber);
-    this.setDateOfBirth(dateOfBirth);
     this.setGender(gender);
   }
 }
