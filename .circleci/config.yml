@@ -51,10 +51,10 @@ jobs:
           destination: pmd-artifacts
 
 workflows:
-  sample:
-    jobs:
-      - compile-project
-      - test-compatibility
-      - tests
-      - code-quality
-      - code-smells
+  job-check:
+       jobs:
+        - compile-project
+        - test-compatibility
+        - tests
+        - code-quality
+        - code-smells

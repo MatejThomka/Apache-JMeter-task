@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,14 @@ public class TestPersonService {
 
   private final TestPersonRepository testPersonRepository;
 
+  /**
+   * Creates a new TestPersonRecord based on the provided TestPerson.
+   *
+   * @param testPerson - The TestPerson object containing information for creating the record.
+   * @return - A TestPersonRecord representing the newly created record.
+   * @throws JMeterException - If there is an issue related to JMeter.
+   * @throws TestPersonAlreadyExistException - If a TestPerson with the same details already exists.
+   */
   public TestPersonRecord create(TestPerson testPerson) throws JMeterException {
 
     log.info("Creating new TestPerson");
@@ -137,6 +146,31 @@ public class TestPersonService {
   }
 
   /**
+   * Deletes a TestPerson with the specified ID if the provided birth number matches.
+   *
+   * @param id - The ID of the TestPerson to be deleted.
+   * @param testPerson - The TestPerson object containing the birth number for validation.
+   * @return - The deleted TestPerson.
+   * @throws BirthNumberException - If there is an issue related to the birth number.
+   * @throws TestPersonNotFoundException - If the TestPerson with the specified ID is not found.
+   */
+  public TestPerson delete(Integer id,
+                           TestPerson testPerson) throws BirthNumberException {
+
+    log.info("Deleting id " + id + "!");
+
+    TestPerson removingPerson = testPersonRepository.findById(id).orElseThrow(() -> new TestPersonNotFoundException(id + " not found!"));
+
+    if (Objects.equals(testPerson.getBirthNumber(), removingPerson.getBirthNumber())) {
+      testPersonRepository.delete(removingPerson);
+    } else {
+      throw new BirthNumberException("Birth number is not correct!");
+    }
+
+    return removingPerson;
+  }
+
+  /**
    * Validates the birth number based on gender and data structure.
    *
    * @param birthNumber - Birth number of the person.
@@ -201,6 +235,13 @@ public class TestPersonService {
     }
   }
 
+  /**
+   * Extracts the date of birth from a given birth number, considering the gender.
+   *
+   * @param birthNumber - The birth number from which to extract the date of birth.
+   * @param gender - The gender associated with the birth number.
+   * @return - A formatted string representing the date of birth (yyyy-MM-dd).
+   */
   private String extractDateOfBirth(String birthNumber, Gender gender) {
 
     int month = Integer.parseInt(birthNumber.substring(2, 4));
