@@ -34,21 +34,3 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-
-
-#  ## JPA / HIBERNATE ##
-#  jpa:
-#    hibernate:
-#      ddl-auto: create-drop
-#    show-sql: true
-#    properties:
-#      hibernate:
-#        format_sql: true
-#    database: mysql
-#
-#
-### Server Configuration ##
-#server:
-#  port: 8080
-##   servlet:
-##     context-path: "/api"
