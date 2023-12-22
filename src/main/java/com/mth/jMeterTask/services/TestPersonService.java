@@ -89,7 +89,7 @@ public class TestPersonService {
 
   public List<TestPersonRecord> search(TestPerson testPerson) {
 
-    log.info("Search users and list them by searching options. " + testPerson);
+    log.info("Search users and list them by searching options.");
 
     Specification<TestPerson> spec = Specification.where(null);
 
